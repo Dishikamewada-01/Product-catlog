@@ -1,12 +1,58 @@
-# Product Catalog Application
+# 🛒 Product Catalog Application
 
-A Spring Boot based product catalog app with JWT Authentication.
+A Spring Boot based RESTful backend application for managing a product catalog, secured with JWT authentication.
 
-## Features
-- JWT login and registration
-- Add/update/delete products and categories
+---
+
+## 🚀 Features
+
+- 🔐 JWT-based authentication (Login & Registration)
+- 🛍️ Add, update, delete products
+- 📂 Add, update, delete product categories
+- 🧾 Clean architecture using DTOs and Mappers
 
 
-## Tech Stack
-- Java, Spring Boot, Spring Security, Jpa
+---
+
+## 🛠 Tech Stack
+
+- Java 17+
+- Spring Boot
+- Spring Data JPA (Hibernate)
+- Spring Security with JWT
 - MySQL
+- Maven
+- Postman (for API testing)
+
+---
+
+## ⚙️ How to Run
+### 1. Clone the Repository 
+```bash 
+git clone https://github.com/Dishikamewada-01/Product-catlog.git cd Product-catlog ```
+
+### 2. Open in IDE 
+Import the project as a **Maven Project** in **Eclipse** or **IntelliJ IDEA**. 
+Wait until all dependencies are downloaded by the IDE.
+
+
+### 3. Configure Database
+Update the following in your `application.properties` file:
+spring.datasource.url=jdbc:mysql://localhost:3306/product_db
+spring.datasource.username=root
+spring.datasource.password=your_password
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+
+
+ ### 4. Run the Application 
+ Run the main class `ProductCatalogApplication.java`
+ Your Spring Boot app will be available at: `http://localhost:8080` 
+ 
+ 
+ ### 5. API Endpoints -
+ GET  /api/products     - Get all products
+POST /api/products     - Add a new product
+GET  /api/categories   - Get all categories
+POST /api/categories   - Add a new category
+
