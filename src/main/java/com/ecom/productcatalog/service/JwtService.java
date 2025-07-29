@@ -37,8 +37,8 @@ public class JwtService {
     }
 
     private SecretKey getKey() {
-        byte[] keyBytes = SECRET_KEY.getBytes(StandardCharsets.UTF_8);
-        return Keys.hmacShaKeyFor(keyBytes);
+         byte[] keyBytes = secretKey.getBytes(StandardCharsets.UTF_8);
+         return Keys.hmacShaKeyFor(keyBytes);
     }
 
     public String extractUserName(String token) {
