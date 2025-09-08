@@ -8,6 +8,7 @@ import java.util.function.Function;
 
 import javax.crypto.SecretKey;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +19,11 @@ import io.jsonwebtoken.security.Keys;
 @Service
 public class JwtService {
 
+
     private static final String SECRET_KEY = "MY_SECRET_KEY_123456789012345678901234";
+
+    @Value("${jwt.secret}")
+    private String secretKey; // 🔒 Use your own secret key from application.properties
     private static final long EXPIRATION_TIME = 1000 * 60 * 60; // 1 hour
 
     public String generateTokens(String username) {
@@ -36,8 +41,10 @@ public class JwtService {
     }
 
     private SecretKey getKey() {
+
         byte[] keyBytes = SECRET_KEY.getBytes(StandardCharsets.UTF_8);
         return Keys.hmacShaKeyFor(keyBytes);
+
     }
 
     public String extractUserName(String token) {
