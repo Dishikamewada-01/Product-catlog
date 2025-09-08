@@ -1,22 +1,17 @@
 package com.ecom.productcatalog.controller;
 
-import com.ecom.productcatalog.model.Category;
+import com.ecom.productcatalog.dto.request.CategoryRequestDto;
+import com.ecom.productcatalog.dto.response.CategoryDto;
 import com.ecom.productcatalog.service.CategoryService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/categories")
-
 public class CategoryController {
-
-
-	// Constructor injection
 
     private final CategoryService categoryService;
 
@@ -25,18 +20,23 @@ public class CategoryController {
     }
 
     @GetMapping
-    public List<Category> getAllCategories(){
-        return categoryService.getAllCategories();
+    public ResponseEntity<List<CategoryDto>> getAllCategories() {
+        List<CategoryDto> categories = categoryService.getAllCategories();
+        return ResponseEntity.ok(categories);
     }
-    
+
     @PostMapping
-    public Category saveCategory(@RequestBody Category category) {
-    	 System.out.println("Received category: " + category.getName());
-    	return categoryService.saveCategory(category);
+    public ResponseEntity<CategoryDto> saveCategory(@RequestBody CategoryRequestDto dto) {
+        CategoryDto saved = categoryService.saveCategory(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
-    
-    
-  
-    
-    
+
+    @PutMapping("/{id}")
+    public ResponseEntity<CategoryDto> updateCategory(
+            @PathVariable Long id,
+            @RequestBody CategoryRequestDto dto) {
+
+        CategoryDto updated = categoryService.updateCategory(id, dto);
+        return ResponseEntity.ok(updated);
+    }
 }

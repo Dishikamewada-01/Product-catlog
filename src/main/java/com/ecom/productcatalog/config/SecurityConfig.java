@@ -36,7 +36,7 @@ public class SecurityConfig {
 		
 		httpSecurity.csrf(customizer-> customizer.disable()); // disabled csrf as using postman
 		httpSecurity.authorizeHttpRequests(request->request
-				.requestMatchers("register" , "login").permitAll()	
+				.requestMatchers("/api/auth/**").permitAll()
 				.anyRequest().authenticated()); // login required for any request
 		
 		//For browser form
@@ -56,10 +56,7 @@ public class SecurityConfig {
 	        return new BCryptPasswordEncoder(); // secure and preferred
 	 }
 	 
-//	 @Bean
-//	 public PasswordEncoder passwordEncoder() {
-//	     return NoOpPasswordEncoder.getInstance();  //  for testing only!
-//	 }
+
 	
 	@Bean
 	public AuthenticationProvider authenticationProvider() {

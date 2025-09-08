@@ -3,6 +3,7 @@ package com.ecom.productcatalog.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ecom.productcatalog.dto.response.UserDto;
@@ -11,6 +12,7 @@ import com.ecom.productcatalog.model.Users;
 import com.ecom.productcatalog.service.UserService;
 
 @RestController
+@RequestMapping("api/auth")
 public class UsersController {
 
 	@Autowired

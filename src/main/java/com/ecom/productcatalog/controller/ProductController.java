@@ -1,16 +1,13 @@
 package com.ecom.productcatalog.controller;
 
+import com.ecom.productcatalog.dto.request.ProductRequestDto;
 import com.ecom.productcatalog.dto.response.ProductDto;
-import com.ecom.productcatalog.mapper.ProductMapper;
-import com.ecom.productcatalog.model.Product;
 import com.ecom.productcatalog.service.ProductService;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/products")
@@ -22,152 +19,97 @@ public class ProductController {
         this.productService = productService;
     }
 
-    // Save products in a particular category
+    // ---------------- Create ----------------
+
+    // Save a single product
+    @PostMapping
+    public ResponseEntity<ProductDto> saveProduct(@RequestBody ProductRequestDto dto) {
+        ProductDto saved = productService.saveProduct(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
+    }
+
+    // Save multiple products for a category
     @PostMapping("/category/{categoryName}")
-    public ResponseEntity<?> saveProductsForCategory(@PathVariable String categoryName,
-                                                 @RequestBody List<Product> products) {
-    	
-    	try {
-            List<Product> savedProducts = productService.saveProductsByCategoryName(categoryName, products);
-            return ResponseEntity.status(HttpStatus.CREATED).body(savedProducts);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Category not found: " + categoryName);
-        }
-    	
+    public ResponseEntity<List<ProductDto>> saveProductsForCategory(
+            @PathVariable String categoryName,
+            @RequestBody List<ProductRequestDto> dtos) {
+
+        // Note: categoryName is validated in service
+        List<ProductDto> savedProducts = productService.saveProductsByCategoryName(categoryName, dtos);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedProducts);
     }
+
     
-    
-    // Get all Products with base url
+    // ---------------- Read ----------------
+
+    // Get all products
     @GetMapping
-    public ResponseEntity<?> getAllProducts() {
-        List<Product> products = productService.getAllProducts();
-
-        if (products.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No products");
-        }
-
-        List<ProductDto> dtos = products.stream()
-                                        .map(ProductMapper::toDto)
-                                        .toList();
-
-        return ResponseEntity.ok(dtos);
+    public ResponseEntity<List<ProductDto>> getAllProducts() {
+        List<ProductDto> products = productService.getAllProducts();
+        return ResponseEntity.ok(products);
     }
 
-    
-    // Fetch product by productId
+   
+    // Get product by ID
     @GetMapping("/{id}")
-    public ResponseEntity<?> getProductById(@PathVariable Long id) {
-    	
-    	Optional<Product> product= productService.getProductById(id);
-    	if(product.isEmpty()) {
-    		return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No product with given id " + id);
-    	}
-    	return ResponseEntity.ok(product.get());
-    	
+    public ResponseEntity<ProductDto> getProductById(@PathVariable Long id) {
+        ProductDto product = productService.getProductById(id);
+        return ResponseEntity.ok(product);
     }
 
-    
-    // Fetch Products by CategoryName
+   
+    // Get products by category name
     @GetMapping("/category/{categoryName}")
-    public ResponseEntity<?> getProductsByCategory(@PathVariable String categoryName) {
-    	
-    	List<Product> products= productService.getProductsByCategoryName(categoryName);
-    	if(products.isEmpty()) {
-    		return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No Product in " + categoryName);
-    	}
-    	
-    	return ResponseEntity.ok(products);
-    	
-    }
-
-    
-    //Fetch Products by price
-    @GetMapping("/price/{price}")
-    public ResponseEntity<?> getProductsByPrice(@PathVariable Double price) {
-    	List<Product> products = productService.getProductsByPrice(price);
-        if (products.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                                 .body("No products found with price: " + price);
-        }
+    public ResponseEntity<List<ProductDto>> getProductsByCategory(@PathVariable String categoryName) {
+        List<ProductDto> products = productService.getProductsByCategoryName(categoryName);
         return ResponseEntity.ok(products);
     }
-    
-    
-    //Fetch products Between price Range
+
+   
+    // Get products by price range
     @GetMapping("/price-range")
-    public ResponseEntity<?> getProductsByPriceRange(@RequestParam Double min, @RequestParam Double max) {
-    	List<Product> products = productService.getProductsByPriceRange(min, max);
-        if (products.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                                 .body("No products found between price range " + min + " - " + max);
-        }
+    public ResponseEntity<List<ProductDto>> getProductsByPriceRange(
+            @RequestParam Double min,
+            @RequestParam Double max) {
+
+        List<ProductDto> products = productService.getProductsByPriceRange(min, max);
         return ResponseEntity.ok(products);
     }
 
     
-    // Fetch products of price less than
+    // Get products less than price
     @GetMapping("/price-less-than/{price}")
-    public ResponseEntity<?> getProductsLessThan(@PathVariable Double price) {
-        List<Product> products = productService.getProductsLessThan(price);
-        if (products.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                                 .body("No products found with price less than: " + price);
-        }
+    public ResponseEntity<List<ProductDto>> getProductsLessThan(@PathVariable Double price) {
+        List<ProductDto> products = productService.getProductsLessThan(price);
         return ResponseEntity.ok(products);
     }
 
     
-    // Fetch products of Price greater than
+    // Get products greater than price
     @GetMapping("/price-greater-than/{price}")
-    public ResponseEntity<?> getProductsGreaterThan(@PathVariable Double price) {
-        List<Product> products = productService.getProductsGreaterThan(price);
-        if (products.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                                 .body("No products found with price greater than: " + price);
-        }
+    public ResponseEntity<List<ProductDto>> getProductsGreaterThan(@PathVariable Double price) {
+        List<ProductDto> products = productService.getProductsGreaterThan(price);
         return ResponseEntity.ok(products);
     }
-    
-    
-    // Update product
-    @PutMapping("/{id}")
-    public ResponseEntity<?> updateProduct(@PathVariable Long id , @RequestBody Product updatedProduct){
-    	Optional<Product> existingProduct = productService.getProductById(id);
-    	
-    	if(existingProduct.isEmpty()) {
-    		return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Product with id not found");
-    	}
-    	
-    	
-    	// Or
-    	
-//    	Product product = existingProduct.orElseThrow(() -> 
-//        new RuntimeException("Product not found"));
-   	
-    	Product product= existingProduct.get();
-    	product.setName(updatedProduct.getName());
-    	product.setDescription(updatedProduct.getDescription());
-        product.setPrice(updatedProduct.getPrice());
-    	product.setImageUrl(updatedProduct.getImageUrl());
-        product.setCategory(updatedProduct.getCategory()); // Or set category by name if needed
 
-        Product savedProduct = productService.updateProduct(product);
-   	    return ResponseEntity.ok(savedProduct);
-    	
+   
+    // ---------------- Update ----------------
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ProductDto> updateProduct(
+            @PathVariable Long id,
+            @RequestBody ProductRequestDto dto) {
+
+        ProductDto updated = productService.updateProduct(id, dto);
+        return ResponseEntity.ok(updated);
     }
-    
-  
-     // Delete product by particular id
-     @DeleteMapping("/{id}")
-     public ResponseEntity<?> deleteProduct(@PathVariable Long id) {
-    	 Optional<Product> product = productService.getProductById(id);
-    	 if(product.isEmpty()) {
-    		 ResponseEntity.status(HttpStatus.NOT_FOUND).body("Product not Found!! Cant be delete");
-    	 }
-    	 
-    	productService.deleteProduct(id);
-    	return ResponseEntity.of(product);
-     }
-    
-    
+
+   
+    // ---------------- Delete ----------------
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
+        productService.deleteProduct(id);
+        return ResponseEntity.noContent().build();
+    }
 }
